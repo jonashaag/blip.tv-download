@@ -1,0 +1,34 @@
+<!doctype html>
+<h1>blip.tv downloader</h1>
+<p>Enter video URL and press [Return]</p>
+<input id=url autofocus>
+<pre id=log></pre>
+<script>
+  function log(s) {
+    document.getElementById('log').appendChild(
+      document.createTextNode(s+"\n"));
+  }
+  document.getElementById('url').onkeyup = function(evt) {
+    if(evt.keyCode != 13 || !this.value) return;
+    var match = /-(\d+)$/.exec(this.value);
+    if(!match) {
+      log("invalid video id");
+      return;
+    }
+    var id = match[1];
+    try {
+      var req = new XMLHttpRequest();
+      req.open('GET', 'http://blip.tv/rss/flash/'+id, false);
+      req.send(null);
+      var urls = req.responseXML.getElementsByTagName('content');
+      for(var i=0; i<urls.length; i++) {
+        var url = urls[i].attributes;
+        log(url.width.childNodes[0].data + 'x' + url.height.childNodes[0].data
+            + ', ' + url.type.childNodes[0].data + ', '
+            + ' --> ' + url.url.childNodes[0].data);
+      }
+    } catch(e) {
+      log(e)
+    }
+  }
+</script>
