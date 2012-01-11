@@ -10,12 +10,11 @@
   }
   document.getElementById('url').onkeyup = function(evt) {
     if(evt.keyCode != 13 || !this.value) return;
-    var match = /-(\d+)$/.exec(this.value);
-    if(!match) {
+    var id = /\d+$/.exec(this.value);
+    if(!id) {
       log("invalid video id");
       return;
     }
-    var id = match[1];
     try {
       var req = new XMLHttpRequest();
       req.open('GET', 'http://blip.tv/rss/flash/'+id, false);
@@ -23,6 +22,7 @@
       var urls = req.responseXML.getElementsByTagName('content');
       for(var i=0; i<urls.length; i++) {
         var url = urls[i].attributes;
+        if(!url.url) continue;
         log(url.width.childNodes[0].data + 'x' + url.height.childNodes[0].data
             + ', ' + url.type.childNodes[0].data + ', '
             + ' --> ' + url.url.childNodes[0].data);
